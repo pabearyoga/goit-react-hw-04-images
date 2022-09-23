@@ -1,79 +1,34 @@
-import React, { Component } from "react";
-import ContactForm from "./ContactForm/ContactForm";
-import ContactList from "./ContactList/ContactList";
-import Filter from "./Filter/Filter";
-import css from "./App.module.css"
+import { Component } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
+import { Searchbar } from './Searchbar/Searchbar';
+import 'react-toastify/dist/ReactToastify.css';
+import { ImageGallery } from './ImageGallery/ImageGallery';
+// import { Loader } from './Loader/Loader';
 
-class App extends Component {
+export class App extends Component {
+  state = {
+    query: '',
+  };
 
-    state = {
-        contacts: [],
-        filter: '',
+  componentDidUpdate(prevProps, prevState) {
+    const { query } = this.state;
+    if (prevState.query === query) {
+      toast.info('We already found it');
     }
+  }
 
-    componentDidMount() {
-        const contacts = localStorage.getItem('contacts');
-        const parseContacts = JSON.parse(contacts);
-        
-        if (parseContacts) {
-            this.setState({contacts: parseContacts })
-        }
-    }
+  searchImg = query => {
+    this.setState({ query });
+  };
 
-    componentDidUpdate(prevProps, prevState) {
-        if (this.state.contacts !== prevState.contacts) {
-            localStorage.setItem('contacts', JSON.stringify(this.state.contacts))
-        }
-    }
-    
-    
-
-    formSubmitHandler = newContact => {
-        if (this.state.contacts.some(value => value.name === newContact.name)) {
-            alert(`${newContact.name} is already in contacts`)
-        } else {
-            this.setState(prevState => ({
-            contacts: [...prevState.contacts, newContact],
-            }));
-        }
-    }
-
-    handleDelete = contactId => {
-        this.setState(ps => (
-            {
-            contacts: ps.contacts.filter(contact => contact.id !== contactId),
-        }
-        ))
-    }
-
-    changeFilter = e => {
-        this.setState({filter: e.currentTarget.value})
-    }
-
-    getFiltredContacts = () => {
-        const { filter, contacts } = this.state;
-
-        const normalizeFilter = filter.toLowerCase();
-
-        return contacts.filter(contact => contact.name.toLowerCase().includes(normalizeFilter))
-
-    }
-
-    render() {
-
-        const filtredContacts = this.getFiltredContacts()
-
-        return (
-            <div className={css.main}>
-                <h1 className={css.title}>Phonebook</h1>
-                <ContactForm onSubmit={this.formSubmitHandler} />
-                <h2 className={css.upperTitle}>Contacts</h2>
-                <Filter onChange={this.changeFilter} value={this.state.filter} />
-                <ContactList contacts={filtredContacts} onDelete={this.handleDelete}  />
-            </div>
-        );
-    }
-    
+  render() {
+    const { query } = this.state;
+    return (
+      <div className="App">
+        <Searchbar onSubmit={this.searchImg} />
+        <ImageGallery query={query} />
+        <ToastContainer position="top-right" autoClose={2000} />
+      </div>
+    );
+  }
 }
-
-export default App
