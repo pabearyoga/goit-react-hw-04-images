@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import css from './Modal.module.css';
 
 export class Modal extends Component {
+
   static propTypes = {
     onClose: PropTypes.func.isRequired,
     largeIMG: PropTypes.shape({
@@ -10,6 +11,7 @@ export class Modal extends Component {
       tag: PropTypes.string.isRequired,
     }),
   };
+
   componentDidMount() {
     window.addEventListener('keydown', this.handelCloseModal);
     window.addEventListener('click', this.handelCloseModal);
@@ -25,6 +27,7 @@ export class Modal extends Component {
       this.props.onClose();
     }
   };
+  
   render() {
     const { largeIMG } = this.props;
     return (

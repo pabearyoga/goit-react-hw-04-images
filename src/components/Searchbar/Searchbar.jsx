@@ -1,7 +1,6 @@
 import { Component } from 'react';
 import { toast } from 'react-toastify';
 import css from './Searchbar.module.css';
-
 import PropTypes from 'prop-types';
 
 export class Searchbar extends Component {
@@ -24,6 +23,7 @@ export class Searchbar extends Component {
       toast.info('Введіть щось !');
       return;
     }
+    
     this.props.onSubmit(this.state.value);
     this.setState({ value: '' });
   };
