@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState, useEffect} from 'react'
 import { toast } from 'react-toastify';
 import PropTypes from 'prop-types';
 import css from './ImageGallery.module.css';
@@ -16,77 +16,69 @@ const STATUS = {
   success: 'success',
 };
 
-export class ImageGallery extends Component {
-  static propTypes = {
-    query: PropTypes.string.isRequired,
-  };
+const ImageGallery = ({query}) => {
+  const [images, setImages] = useState([]);
+  const [totalHits, setTotalHits] = useState(null);
+  const [tags, setTags] = useState('');
+  const [page, setPage] = useState(1);
+  const [largeIMG, setLargeIMG] = useState(null);
+  const [status, setStatus] = useState(STATUS.idle);
 
-  state = {
-    images: null,
-    totalHits: null,
-    tags: '',
-    page: null,
-    largeIMG: null,
-    status: STATUS.idle,
-  };
-
-  componentDidUpdate(prevProps, _) {
-    const { page } = this.state;
-    const { query } = this.props;
-
-    if (prevProps.query !== query) {
-      this.setState({ status: STATUS.loading });
-      PixabayAPI(query, page)
-        .then(({ data }) => {
-          if (data.total === 0) {
-            toast.error(
-              'Sorry, matching your search query. Please try again.'
-            );
-            this.setState({ status: STATUS.error });
-            return;
-          }
-          this.setState({
-            images: data.hits,
-            totalHits: data.totalHits,
-            page: 1,
-            tags: query,
-            status: STATUS.success,
-          });
-        })
-        .catch(error => {
-          toast.error(error.message);
-          this.setState({ status: STATUS.error });
-        });
+  useEffect(() => {
+    if (tags !== query) {
+      setImages([]);
     }
-  }
+  }, [query, tags]);
 
-  handlerLoadMore = () => {
-    this.setState(prevState => ({ page: prevState.page + 1 }));
-    const { tags, page } = this.state;
-    PixabayAPI(tags, page + 1).then(({ data }) => {
-      this.setState(prevState => ({
-        images: [...prevState.images, ...data.hits],
-      }));
-    });
+  useEffect(() => {
+    if (!query) {
+      return
+    }
+
+    setStatus(STATUS.loading)
+
+    PixabayAPI(query, page)
+      .then(({ data }) => {
+        if (data.total === 0) {
+          toast.error(
+            'Sorry, matching your search query. Please try again.'
+          );
+
+          setStatus(STATUS.error)
+          setImages([]);
+          setTotalHits(null);
+          return;
+        }
+        
+        setTags(query);
+        setImages(prevState => [...prevState, ...data.hits]);
+        setTotalHits(data.totalHits);
+        setStatus(STATUS.success)
+      })
+      .catch(error => {
+        toast.error(error.message);
+        setStatus(STATUS.error)
+      });
+
+  }, [page, query])
+
+  const handlerLoadMore = () => {
+    setPage(prevState => (prevState + 1)); 
+  } 
+
+  const handlerOpenModal = (img, tag) => {
+    setLargeIMG(img)
   };
 
-  handlerOpenModal = (img, tag) => {
-    this.setState({ largeIMG: { img, tag } });
+  const handlerCloseModal = () => {
+    setLargeIMG(null)
   };
 
-  handlerCloseModal = () => {
-    this.setState({
-      largeIMG: null,
-    });
-  };
-
-  render() {
-    const { images, status, totalHits, page, largeIMG } = this.state;
-    return (
+      return (
       <>
         {status === STATUS.loading && <Loader />}
         <ul className={css.ImageGallery}>
-          {status === STATUS.success &&
+          {images.length > 0 &&
             images.map(el => {
               return (
                 <ImagesGallaryItem
@@ -94,18 +86,24 @@ export class ImageGallery extends Component {
                   webformatURL={el.webformatURL}
                   tags={el.tags}
                   largeImageURL={el.largeImageURL}
-                  handlerOpenModal={this.handlerOpenModal}
+                  handlerOpenModal={handlerOpenModal}
                 />
               );
             })}
           {largeIMG && (
-            <Modal largeIMG={largeIMG} onClose={this.handlerCloseModal} />
+            <Modal largeIMG={largeIMG} onClose={handlerCloseModal} />
           )}
         </ul>
         {totalHits >= 12 * page && status === STATUS.success && (
-          <Button onClick={this.handlerLoadMore} />
+          <Button onClick={handlerLoadMore} />
         )}
       </>
     );
-  }
+
 }
+
+ImageGallery.propTypes = {
+  query: PropTypes.string.isRequired,
+};
+
+export default ImageGallery
