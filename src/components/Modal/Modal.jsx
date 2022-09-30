@@ -2,27 +2,31 @@ import { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import css from './Modal.module.css';
 
-const Modal = ({largeIMG, onClose}) => {
+const Modal = ({ largeIMG, onClose }) => {
+  
   useEffect(() => {
-    window.addEventListener('keydown', handelCloseModal);
-    window.addEventListener('click', handelCloseModal);
+    window.addEventListener('keydown', event => {
+      if (event.code === 'Escape' || event.target.id === 'Overlay') {
+        onClose();
+      }
+    });
 
-    return () => {
-      window.addEventListener('keydown', handelCloseModal);
-      window.addEventListener('click', handelCloseModal);
-    }
-
-  }, [handelCloseModal, onClose]);
+    return window.removeEventListener('keydown', event => {
+      if (event.code === 'Escape') {
+        onClose();
+      }
+    });
+  }, [onClose]);
 
   const handelCloseModal = event => {
-    if (event.code === 'Escape' || event.target.id === 'Overlay') {
-    onClose();
+    if (event.currentTarget === event.target) {
+      onClose();
     }
   };
 
 
   return (
-    <div className={css.Overlay} id="Overlay">
+    <div className={css.Overlay} id="Overlay" onClick={handelCloseModal}>
       <div className={css.Modal}>
         <img src={largeIMG.img} alt={largeIMG.tag} />
       </div>
