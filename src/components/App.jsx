@@ -1,33 +1,28 @@
-import { Component } from 'react';
+import { useState } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import  Searchbar  from './Searchbar/Searchbar';
 import 'react-toastify/dist/ReactToastify.css';
 import  ImageGallery  from './ImageGallery/ImageGallery';
 
-export class App extends Component {
-  state = {
-    query: '',
-  };
 
-  componentDidUpdate(_, prevState) {
-    const { query } = this.state;
-    if (prevState.query === query) {
+const App = () => {
+  const [query, setQuery] = useState('');
+
+  const searchImg = tag => {
+    if (query === tag) {
       toast.info('We already found it');
+      return;
     }
-  }
-
-  searchImg = query => {
-    this.setState({ query });
+    setQuery(tag);
   };
 
-  render() {
-    const { query } = this.state;
-    return (
-      <div className="App">
-        <Searchbar onSubmit={this.searchImg} />
-        <ImageGallery query={query} />
-        <ToastContainer position="top-right" autoClose={2000} />
-      </div>
-    );
-  }
+  return (
+  <div className="App">
+    <Searchbar onSubmit={searchImg} />
+    <ImageGallery query={query} />
+    <ToastContainer position="top-right" autoClose={2000} />
+  </div>
+);
 }
+
+export default App

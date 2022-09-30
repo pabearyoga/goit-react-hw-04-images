@@ -67,7 +67,7 @@ const ImageGallery = ({query}) => {
   } 
 
   const handlerOpenModal = (img, tag) => {
-    setLargeIMG(img)
+    setLargeIMG({img, tag})
   };
 
   const handlerCloseModal = () => {
