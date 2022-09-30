@@ -12,7 +12,7 @@ const Modal = ({largeIMG, onClose}) => {
       window.addEventListener('click', handelCloseModal);
     }
 
-  }, [() => handelCloseModal]);
+  }, [ onClose]);
 
   const handelCloseModal = event => {
     if (event.code === 'Escape' || event.target.id === 'Overlay') {
