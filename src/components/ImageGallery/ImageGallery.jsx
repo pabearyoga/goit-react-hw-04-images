@@ -7,7 +7,7 @@ import { PixabayAPI } from 'servises/PixabayAPI';
 import { ImagesGallaryItem } from 'components/ImageGalleryItem/ImageGalleryItem';
 import { Button } from 'components/Button/Button';
 import { Loader } from 'components/Loader/Loader';
-import { Modal } from 'components/Modal/Modal';
+import  Modal  from 'components/Modal/Modal';
 
 const STATUS = {
   idle: 'idle',

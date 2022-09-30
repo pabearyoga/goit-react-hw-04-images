@@ -1,41 +1,32 @@
-import { Component } from 'react';
-import PropTypes from 'prop-types';
+import { useEffect } from 'react';
 import css from './Modal.module.css';
 
-export class Modal extends Component {
+const Modal = ({largeIMG, onClose}) => {
+  useEffect(() => {
+    window.addEventListener('keydown', handelCloseModal);
+    window.addEventListener('click', handelCloseModal);
 
-  static propTypes = {
-    onClose: PropTypes.func.isRequired,
-    largeIMG: PropTypes.shape({
-      img: PropTypes.string.isRequired,
-      tag: PropTypes.string.isRequired,
-    }),
-  };
+    return () => {
+      window.addEventListener('keydown', handelCloseModal);
+      window.addEventListener('click', handelCloseModal);
+    }
 
-  componentDidMount() {
-    window.addEventListener('keydown', this.handelCloseModal);
-    window.addEventListener('click', this.handelCloseModal);
-  }
+  }, [() => handelCloseModal]);
 
-  componentWillUnmount() {
-    window.removeEventListener('keydown', this.handelCloseModal);
-    window.removeEventListener('click', this.handelCloseModal);
-  }
-
-  handelCloseModal = event => {
+  const handelCloseModal = event => {
     if (event.code === 'Escape' || event.target.id === 'Overlay') {
-      this.props.onClose();
+    onClose();
     }
   };
-  
-  render() {
-    const { largeIMG } = this.props;
-    return (
-      <div className={css.Overlay} id="Overlay">
-        <div className={css.Modal}>
-          <img src={largeIMG.img} alt={largeIMG.tag} />
-        </div>
+
+
+  return (
+    <div className={css.Overlay} id="Overlay">
+      <div className={css.Modal}>
+        <img src={largeIMG.img} alt={largeIMG.tag} />
       </div>
-    );
-  }
+    </div>
+  );
 }
+
+export default Modal
