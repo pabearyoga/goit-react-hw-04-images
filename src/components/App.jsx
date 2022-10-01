@@ -16,10 +16,11 @@ const App = () => {
     setQuery(tag);
   };
 
+
   return (
   <div className="App">
     <Searchbar onSubmit={searchImg} />
-    <ImageGallery query={query} />
+      <ImageGallery query={query}  />
     <ToastContainer position="top-right" autoClose={2000} />
   </div>
 );

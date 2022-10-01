@@ -7,7 +7,7 @@ import { PixabayAPI } from 'servises/PixabayAPI';
 import { ImagesGallaryItem } from 'components/ImageGalleryItem/ImageGalleryItem';
 import { Button } from 'components/Button/Button';
 import { Loader } from 'components/Loader/Loader';
-import  Modal  from 'components/Modal/Modal';
+import Modal from 'components/Modal/Modal';
 
 const STATUS = {
   idle: 'idle',
@@ -20,9 +20,10 @@ const ImageGallery = ({query}) => {
   const [images, setImages] = useState([]);
   const [totalHits, setTotalHits] = useState(null);
   const [tags, setTags] = useState('');
-  const [page, setPage] = useState(null);
+  const [page, setPage] = useState(1);
   const [largeIMG, setLargeIMG] = useState(null);
   const [status, setStatus] = useState(STATUS.idle);
+
 
   useEffect(() => {
     if (tags !== query) {
@@ -31,40 +32,55 @@ const ImageGallery = ({query}) => {
     }
   }, [query, tags]);
 
+  
   useEffect(() => {
-    if (!query) {
+    if (!query ) {
       return
     }
+    
+    const fetchArticles = () => {
+    
+      setStatus(STATUS.loading)
 
-    setStatus(STATUS.loading)
+      PixabayAPI(query, page)
+        .then(({ data }) => {
+          if (data.total === 0) {
+            toast.error(
+              'Sorry, matching your search query. Please try again.'
+            );
 
-    PixabayAPI(query, page)
-      .then(({ data }) => {
-        if (data.total === 0) {
-          toast.error(
-            'Sorry, matching your search query. Please try again.'
-          );
+            setStatus(STATUS.error)
+            setImages([]);
+            setTotalHits(null);
 
+            return;
+          }
+      
+          if (page === 1) {
+            setImages([...data.hits]);
+            setTotalHits(data.totalHits);
+            setTags(query);
+            
+          } else {
+            setImages(prevState => [...prevState, ...data.hits]);
+
+          }
+        })
+        .catch(error => {
+          toast.error(error.message);
           setStatus(STATUS.error)
-          setImages([]);
-          setTotalHits(null);
-          return;
-        }
-        
-        setTags(query);
-        setImages(prevState => [...prevState, ...data.hits]);
-        setTotalHits(data.totalHits);
+        });
         setStatus(STATUS.success)
-      })
-      .catch(error => {
-        toast.error(error.message);
-        setStatus(STATUS.error)
-      });
+     
+    }
 
+    fetchArticles()
   }, [page, query])
 
+
   const handlerLoadMore = () => {
-    setPage(prevState => (prevState + 1)); 
+
+    setPage(prevState => (prevState + 1));
   } 
 
   const handlerOpenModal = (img, tag) => {
