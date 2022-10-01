@@ -20,7 +20,7 @@ const ImageGallery = ({query}) => {
   const [images, setImages] = useState([]);
   const [totalHits, setTotalHits] = useState(null);
   const [tags, setTags] = useState('');
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(null);
   const [largeIMG, setLargeIMG] = useState(null);
   const [status, setStatus] = useState(STATUS.idle);
 
