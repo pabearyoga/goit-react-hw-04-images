@@ -59,11 +59,10 @@ const ImageGallery = ({query}) => {
           if (page === 1) {
             setImages([...data.hits]);
             setTotalHits(data.totalHits);
-            setTags(query);
             
           } else {
             setImages(prevState => [...prevState, ...data.hits]);
-
+            
           }
         })
         .catch(error => {
