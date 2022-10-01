@@ -69,8 +69,8 @@ const ImageGallery = ({query}) => {
           toast.error(error.message);
           setStatus(STATUS.error)
         });
+        setTags(query)
       setStatus(STATUS.success)
-      setTags(query)
      
     }
 
