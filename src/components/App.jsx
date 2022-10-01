@@ -7,7 +7,6 @@ import  ImageGallery  from './ImageGallery/ImageGallery';
 
 const App = () => {
   const [query, setQuery] = useState('');
-  // const [page, setPage] = useState(1)
 
   const searchImg = tag => {
     if (query === tag) {
