@@ -18,6 +18,7 @@ import css from './Searchbar.module.css';
       return;
     }
     
+    
     onSubmit(value);
     setValue('');
   };

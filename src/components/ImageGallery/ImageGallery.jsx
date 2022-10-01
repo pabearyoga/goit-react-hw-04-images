@@ -27,6 +27,7 @@ const ImageGallery = ({query}) => {
   useEffect(() => {
     if (tags !== query) {
       setImages([]);
+      setPage(1)
     }
   }, [query, tags]);
 
